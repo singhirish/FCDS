@@ -1,4 +1,4 @@
-CC    = g++
+CC    = g++ --std=c++11
 FLAGS = -O3 -Wall -Wno-unused-result
 
 SRC   = friendly.cpp
