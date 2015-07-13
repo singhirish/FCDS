@@ -1,7 +1,7 @@
 CC    = g++ --std=c++11
 FLAGS = -O3 -Wall -Wno-unused-result
 
-SRC   = bucketsort.cpp
+SRC   = bucketsort.cpp main.cpp
 EXEC  = bin/bucketsort
 
 all: make_dirs $(EXEC)
