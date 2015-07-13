@@ -3,7 +3,6 @@
 #include "bucketsort.h"
 #include <stdio.h>
 #include <thread>
-#include <thread>
 
 using namespace std;
 
@@ -30,21 +29,19 @@ void sort_with_index(char* a, bucket *bucket, int index) {
 	bucket->data[i + 1] = key;
 }
 
-void sort(char* a, bucket *bucket, bool parallel) {
+void sort(char* a, bucket *buckets, int threadNumber, int threadSize) {
 	int j;
-	thread threads[bucket->total];	
 
-	for (j = 0; j < bucket->total; j++) {
-		threads[j] = thread(sort_with_index, a, bucket, j);
-	}
-
-	for (j = 0; j < bucket->total; j++) {
-		threads[j].join();
+	for (int k = threadNumber; k < N_BUCKETS; k += threadSize) {
+		bucket *_bucket = &buckets[k];
+		for (j = 0; j < _bucket->total; j++) {
+			sort_with_index(a, _bucket, j);
+		}	
 	}
 }
 
 // returns the sorted indices
-long int* bucket_sort(char *a, int length, long int size, bool parallel, int numberOfThreads) {
+long int* bucket_sort(char *a, int length, long int size, int numberOfThreads) {
 
 	long int i;
 	bucket buckets[N_BUCKETS], *b;
@@ -69,12 +66,15 @@ long int* bucket_sort(char *a, int length, long int size, bool parallel, int num
 		// Write to position total++ (the latest element's index) the currently processed index i
 		b->data[b->total++] = i;
 	}
+	thread threads[numberOfThreads];
 
 	// sort each "bucket"
-	for (i = 0; i < N_BUCKETS; i++) {
-		b = &buckets[i];
-		sort(a, b, parallel);
-		//threads[i] = thread(sort, a, b);
+	for (i = 0; i < numberOfThreads; i++) {
+		threads[i] = thread(sort, a, buckets, i, numberOfThreads);
+	}
+
+	for (i = 0; i < numberOfThreads; i++) {
+		threads[i].join();
 	}	
 
 	//for (auto& th : threads) th.join();
