@@ -4,6 +4,7 @@
 #include <thread>
 #include "string.h"
 #include "ThreadPool.h"
+#include <iostream>
 
 using namespace std;
 
@@ -42,7 +43,7 @@ void _friendly_numbers(long int i, long int start, long int end, long int **_the
 	}
 }
 
-void friendly_numbers(long int start, long int end) {
+void friendly_numbers(long int start, long int end, int numberOfThreads) {
 	long int last = end - start + 1;
 
 	long int *the_num;
@@ -55,9 +56,9 @@ void friendly_numbers(long int start, long int end) {
 	long int i, j;
 
 	{
-		ThreadPool pool(4);
-		for (int threadIndex = 0; threadIndex < 4; threadIndex++) {
-			pool.enqueue(_friendly_numbers, i, start, end, &the_num, &num, &den, threadIndex, 4);
+		ThreadPool pool(numberOfThreads);
+		for (int threadIndex = 0; threadIndex < numberOfThreads; threadIndex++) {
+			pool.enqueue(_friendly_numbers, i, start, end, &the_num, &num, &den, threadIndex, numberOfThreads);
 		}
 	}	
 
@@ -76,13 +77,18 @@ void friendly_numbers(long int start, long int end) {
 int main(int argc, char **argv) {
 	long int start;
 	long int end;
+	int numberOfThreads = 1;
+
+	if (argc == 2) {
+		numberOfThreads = atoi(argv[1]);
+	}
 
 	while (1) {
 		scanf("%ld %ld", &start, &end);
 		if (start == 0 && end == 0)
 			break;
 		printf("Number %ld to %ld\n", start, end);
-		friendly_numbers(start, end);
+		friendly_numbers(start, end, numberOfThreads);
 	}
 
 	return EXIT_SUCCESS;
