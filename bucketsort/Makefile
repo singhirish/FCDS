@@ -1,4 +1,4 @@
-CC    = g++ --std=c++11
+CC    = g++ --std=c++0x
 FLAGS = -O3 -Wall -Wno-unused-result
 
 SRC   = bucketsort.cpp main.cpp
