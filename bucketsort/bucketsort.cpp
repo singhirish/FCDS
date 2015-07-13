@@ -3,7 +3,7 @@
 #include "bucketsort.h"
 #include <stdio.h>
 #include <thread>
-#include "ThreadPool.h"
+#include <thread>
 
 using namespace std;
 
@@ -30,13 +30,16 @@ void sort_with_index(char* a, bucket *bucket, int index) {
 	bucket->data[i + 1] = key;
 }
 
-void sort(char* a, bucket *bucket, bool parallel, ThreadPool &pool) {
+void sort(char* a, bucket *bucket, bool parallel) {
 	int j;
-	for (j = 1; j < bucket->total; j++) {
-		if (parallel) 
-			pool.enqueue(sort_with_index, a, bucket, j);
-		else
-			sort_with_index(a, bucket, j);
+	thread threads[bucket->total];	
+
+	for (j = 0; j < bucket->total; j++) {
+		threads[j] = thread(sort_with_index, a, bucket, j);
+	}
+
+	for (j = 0; j < bucket->total; j++) {
+		threads[j].join();
 	}
 }
 
@@ -45,7 +48,6 @@ long int* bucket_sort(char *a, int length, long int size, bool parallel, int num
 
 	long int i;
 	bucket buckets[N_BUCKETS], *b;
-	ThreadPool pool(numberOfThreads);
 	long int *returns;
 
 	// allocate memory
@@ -71,7 +73,7 @@ long int* bucket_sort(char *a, int length, long int size, bool parallel, int num
 	// sort each "bucket"
 	for (i = 0; i < N_BUCKETS; i++) {
 		b = &buckets[i];
-		sort(a, b, parallel, pool);
+		sort(a, b, parallel);
 		//threads[i] = thread(sort, a, b);
 	}	
 
