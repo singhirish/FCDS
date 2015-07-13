@@ -51,17 +51,14 @@ int main(int argc, char* argv[]) {
 
 	fflush(stdout);
 
-	bool parallel;
 	int numberOfThreads;
 	if (argc == 4) {
-		parallel = true;
 		numberOfThreads = atoi(argv[3]);
 	} else {
-		parallel = false;
-		numberOfThreads = 0;
+		numberOfThreads = 1;
 	}
 
-	r = bucket_sort(strings, LENGTH, N, parallel, numberOfThreads);
+	r = bucket_sort(strings, LENGTH, N, numberOfThreads);
 
 	fflush(stdout);
 
